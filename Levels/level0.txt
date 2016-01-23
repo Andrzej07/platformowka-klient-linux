@@ -1,0 +1,4 @@
+player 100 100
+terrain 0 0 200 30
+terrain 0 50 100 10
+finishline 125 25
