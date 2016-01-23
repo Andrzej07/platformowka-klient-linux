@@ -3,6 +3,11 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
+CONFIG(debug, debug|release) {
+    DESTDIR = build/debug
+} else {
+    DESTDIR = build/release
+
 SOURCES += main.cpp \
     App.cpp \
     Camera2D.cpp \
