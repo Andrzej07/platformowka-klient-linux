@@ -29,6 +29,7 @@ sudo make install
 BUDOWANIE KLIENTA
 *****
 (opcjonalnie)qmake platformowka.pro
+make clean
 make
 Umieścić foldery Assets, Fonts, Levels(ten sam co w serwerze), Shaders razem z plikiem wykonywalnym
 Powinno działać
