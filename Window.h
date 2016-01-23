@@ -13,7 +13,7 @@ public:
 	~Window();
 
 	int create(const std::string &windowName, int screenWidth, int screenHeight, unsigned int flags);
-
+    void MakeCurrent();
 	void swapBuffer();
 
     int getScreenHeight() { return m_screenHeight; }
@@ -23,4 +23,5 @@ private:
     SDL_Window* m_sdlWindow;
     int m_screenWidth;
     int m_screenHeight;
+    SDL_GLContext m_glContext;
 };

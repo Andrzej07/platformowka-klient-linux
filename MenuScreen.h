@@ -53,6 +53,6 @@ private:
 
 	bool m_isRunning = true;
 
-	const int m_screenWidth;
-	const int m_screenHeight;
+    int m_screenWidth;
+    int m_screenHeight;
 };

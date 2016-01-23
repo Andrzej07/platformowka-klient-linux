@@ -3,9 +3,7 @@
 
 #define PLAYER_SIZE 10
 
-GameScreen::GameScreen() :
-	m_screenWidth(1440),
-	m_screenHeight(900)
+GameScreen::GameScreen()
 {
 }
 
@@ -17,6 +15,8 @@ GameScreen::~GameScreen()
 void GameScreen::run(Window *window)
 {
 	m_window = window;
+    m_screenHeight = m_window->getScreenHeight();
+    m_screenWidth = m_window->getScreenWidth();
 	initSystems();
 	initShaders();
 

@@ -2,8 +2,8 @@
 #include <string>
 
 App::App() :
-m_screenWidth(1440),
-m_screenHeight(900)
+m_screenWidth(800),
+m_screenHeight(640)
 {
 }
 
@@ -16,6 +16,7 @@ App::~App()
         delete m_gamescr;
     if(m_multiscr)
         delete m_multiscr;
+    SDL_Quit();
 }
 
 void App::run()

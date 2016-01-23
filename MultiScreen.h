@@ -25,10 +25,9 @@ private:
     void initShaders();
     void runLoop();
     void draw();
-    void update(float frameTime);
     void processInput();
     void sendInput();
-
+    void quit();
     void initSocket();
 
 
@@ -47,8 +46,8 @@ private:
     std::string m_serverIP;
     struct sockaddr_in stAddr;
 
-    const int m_screenWidth;
-    const int m_screenHeight;
+    int m_screenWidth;
+    int m_screenHeight;
     bool m_isRunning=true;
 };
 

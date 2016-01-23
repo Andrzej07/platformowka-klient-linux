@@ -71,3 +71,7 @@ void Window::swapBuffer()
 {
     SDL_GL_SwapWindow(m_sdlWindow);
 }
+void Window::MakeCurrent()
+{
+    SDL_GL_MakeCurrent(m_sdlWindow, m_glContext);
+}

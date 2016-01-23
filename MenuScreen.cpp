@@ -4,10 +4,9 @@
 #include <sstream>
 
 const float CAMERA_SCALE = 1.7f;
-MenuScreen::MenuScreen() :
-	m_screenWidth(1440),
-	m_screenHeight(900)
+MenuScreen::MenuScreen()
 {
+
 }
 
 
@@ -27,12 +26,15 @@ void MenuScreen::initSystems()
 MenuReturn MenuScreen::run(Window *window, std::string &serverIP)
 {
 	m_window = window;
+    m_screenHeight = m_window->getScreenHeight();
+    m_screenWidth = m_window->getScreenWidth();
 	initSystems();
 	initShaders();
 	initMenu();
 
     m_multiInputText = "127.0.0.1";
     multiTextDots = 3;
+   // m_window->MakeCurrent();
 	runLoop();
     serverIP = m_multiInputText;
 	return m_menuReturn;
@@ -91,6 +93,7 @@ void MenuScreen::runLoop()
 }
 void MenuScreen::draw()
 {
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -139,6 +142,7 @@ void MenuScreen::draw()
 }
 void MenuScreen::update(float frameTime)
 {
+    frameTime++;
 	for (size_t i = 0; i < m_menuButtons.size(); ++i)
 	{
 		glm::vec2 mousePos = m_camera.convertScreenToWorld(m_inputManager.getMouseCoords());
@@ -262,15 +266,20 @@ void MenuScreen::processInput()
 
 	if (m_inputManager.isKeyPressed(SDLK_BACKSPACE))
     {
+
 		if (m_whereAreWe == SINGLE)
         {
-			m_singleInputText.pop_back();
+            if(!m_singleInputText.empty())
+                m_singleInputText.pop_back();
         }
 		else if (m_whereAreWe == MULTI)
         {
-            if(m_multiInputText.back() == '.')
-                multiTextDots--;
-			m_multiInputText.pop_back();
+            if(!m_multiInputText.empty())
+            {
+                if(m_multiInputText.back() == '.')
+                    multiTextDots--;
+                m_multiInputText.pop_back();
+            }
         }
     }
 /*	float scale = m_camera.getScale();

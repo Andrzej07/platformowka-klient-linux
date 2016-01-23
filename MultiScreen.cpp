@@ -1,6 +1,7 @@
 #include "MultiScreen.h"
 #include "ResourceManager.h"
 #include "Errors.h"
+#include <cmath>
 #include <iostream>
 
 #include <unistd.h>
@@ -19,17 +20,15 @@
 #define PORT 1234   //The port on which to send data
 #define PORT2 1235   //The port on which to send data
 
-MultiScreen::MultiScreen() :
-    m_screenWidth(1440),
-    m_screenHeight(900)
+MultiScreen::MultiScreen()
 {
 }
 
 MultiScreen::MultiScreen(const std::string &serverIP) :
-    m_screenWidth(1440),
-    m_screenHeight(900),
     m_serverIP(serverIP)
 {
+  //  m_screenHeight = m_window->getScreenHeight();
+  //  m_screenWidth = m_window->getScreenWidth();
 }
 
 
@@ -40,6 +39,8 @@ MultiScreen::~MultiScreen()
 void MultiScreen::run(Window *window)
 {
     m_window = window;
+    m_screenHeight = m_window->getScreenHeight();
+    m_screenWidth = m_window->getScreenWidth();
     initSystems();
     initShaders();
 
@@ -50,11 +51,6 @@ void MultiScreen::initSystems()
     m_camera.init(m_screenWidth, m_screenHeight);
     m_spriteBatch.init();
 
-    glm::vec2 playerPos = m_level.load("Levels/level0.txt");
-
-    // Init players
-    m_player1.init(playerPos, glm::vec2(PLAYER_SIZE), "Assets/dude.png");
-    m_player2.init(playerPos, glm::vec2(PLAYER_SIZE), "Assets/dude.png");
 }
 
 void MultiScreen::initShaders()
@@ -111,7 +107,15 @@ void MultiScreen::initSocket()
         m_player1.setColor(1);
         m_player2.setColor(2);
     }
+    char levelName[20];
+    memset(&levelName, '\0', 20);
+    recvfrom(m_mainSocket, levelName, 20, 0, (struct sockaddr *) &stAddr, &slen);
 
+    std::cout << std::string(levelName) << "\n";
+    glm::vec2 playerPos = m_level.load("Levels/" + std::string(levelName));
+
+    m_player1.init(playerPos, glm::vec2(PLAYER_SIZE), "Assets/dude.png");
+    m_player2.init(playerPos, glm::vec2(PLAYER_SIZE), "Assets/dude.png");
     // Send ready for game
     msg = 'r';
     sendto(m_mainSocket, &msg, sizeof(char), 0, (struct sockaddr *)&stAddr, slen);
@@ -154,32 +158,22 @@ void MultiScreen::runLoop()
         // Recalculate camera matrix if needed
         m_camera.setPosition(m_player1.getPosition());
         m_camera.update();
-        // Update physics, objects etc
-        //while (m_timer.canGetTimeChunk())
-    /*
-        float x[2];
-        int rcvd = recvfrom(m_mainSocket, x, 2*sizeof(float), 0, (struct sockaddr*)&servAddr, &servAddrSize);
-        if(rcvd!=0)
-        {
-            m_player1.setPosition(glm::vec2(x[0],x[1]));
-            std::cout << "received\n";
-        }
-*/
 
-        //float x = m_player1.getPosition().y;
         float x[4];
         socklen_t slen = sizeof(stAddr);
         int rcvd = recvfrom(m_mainSocket, x, 4*sizeof(float), 0,(struct sockaddr*) &stAddr, &slen);
         if(rcvd!=-1)
         {
-            m_player1.setPosition(glm::vec2(x[0],x[1]));
-            m_player2.setPosition(glm::vec2(x[2], x[3]));
-            std::cout << "received " << rcvd << "\n";
+            if(fabs(x[0]-666.f)<0.1f && fabs(x[1]-666.f)<0.1f && fabs(x[2]-666.f)<0.1f && fabs(x[3]-666.f)<0.1f)
+            {
+                quit();
+            }
+            else
+            {
+                m_player1.setPosition(glm::vec2(x[0],x[1]));
+                m_player2.setPosition(glm::vec2(x[2], x[3]));
+            }
         }
-
-
-        if(m_timer.canGetTimeChunk())
-            update(m_timer.getTimeChunk());
         // Draw game
         draw();
         m_window->swapBuffer();
@@ -210,16 +204,13 @@ void MultiScreen::draw()
 
     m_level.draw(m_spriteBatch);
     m_player1.draw(m_spriteBatch);
+    m_player2.draw(m_spriteBatch);
 
     m_spriteBatch.end();
     m_spriteBatch.renderBatch();
     m_shaderProgram.unuse();
 }
-void MultiScreen::update(float frameTime)
-{
-    // TODO: Update player state
-    //m_player1.update(frameTime, m_level, &m_inputManager);
-}
+
 void MultiScreen::sendInput()
 {
     socklen_t slen = sizeof(stAddr);
@@ -244,6 +235,17 @@ void MultiScreen::sendInput()
         msg = 'd';
         sendto(m_mainSocket, &msg, sizeof(char) , 0 , (struct sockaddr *) &stAddr, slen);
     }
+}
+
+void MultiScreen::quit()
+{
+    //SDL_Quit();
+    socklen_t slen = sizeof(stAddr);
+    char msg = 'q';
+    sendto(m_mainSocket, &msg, sizeof(char) , 0 , (struct sockaddr *) &stAddr, slen);
+    close(m_mainSocket);
+    //exit(0);
+    m_isRunning = false;
 }
 
 void MultiScreen::processInput()
@@ -277,10 +279,7 @@ void MultiScreen::processInput()
     }
     if (m_inputManager.isKeyPressed(SDLK_ESCAPE))
     {
-        //SDL_Quit();
-        close(m_mainSocket);
-        //exit(0);
-        m_isRunning = false;
+        quit();
     }
 
     float scale = m_camera.getScale();
