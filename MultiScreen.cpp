@@ -123,14 +123,7 @@ void MultiScreen::initSocket()
     do{
         recvfrom(m_mainSocket, &answer, sizeof(char), 0, (struct sockaddr*)&stAddr, &slen);
     }while(answer != 'g');
-    /* bind a name to a socket */
 
-    /*
-    nBind = bind(m_mainSocket, (struct sockaddr*)&stAddr, sizeof(struct sockaddr));
-    if (nBind < 0)
-    {
-        exit(1);
-    } */
     fcntl(m_mainSocket, F_SETFL, O_NONBLOCK,1);
 
 }
@@ -161,8 +154,8 @@ void MultiScreen::runLoop()
 
         float x[4];
         socklen_t slen = sizeof(stAddr);
-        int rcvd = recvfrom(m_mainSocket, x, 4*sizeof(float), 0,(struct sockaddr*) &stAddr, &slen);
-        if(rcvd!=-1)
+
+        while (recvfrom(m_mainSocket, x, 4*sizeof(float), 0,(struct sockaddr*) &stAddr, &slen) > 0)
         {
             if(fabs(x[0]-666.f)<0.1f && fabs(x[1]-666.f)<0.1f && fabs(x[2]-666.f)<0.1f && fabs(x[3]-666.f)<0.1f)
             {
