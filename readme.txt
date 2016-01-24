@@ -34,7 +34,7 @@ make
 Umieścić foldery Assets, Fonts, Levels(ten sam co w serwerze), Shaders razem z plikiem wykonywalnym
 Powinno działać
 
-
+**********************************************************************************************
 *****
 UŻYWANIE
 *****
@@ -50,16 +50,23 @@ OSBŁUGA MENU - *SINGLEPLAYER* uruchamia level0.txt, można sobie pobiegać bez 
 			   odpowiadał; jeśli podane IP jest niepoprawne pozostaje tylko kill :)
 			   *EDITOR*  <NYI>
 
+
+*****
+CEL GRY - dotrzeć do niebieskiego punktu przed drugim graczem
+*****
+
+
+
 *****
 STEROWANIE W GRZE
 *****
 
 Ruch postacią - *W* skok
-				*A* lewo
-				*D* prawo
+			*A* lewo
+			*D* prawo
 
 Sterowanie kamerą - *Q* przyblizenie
-					*E* oddalenie
+				*E* oddalenie
 
 Gra			*ESC* powrót do menu
 
